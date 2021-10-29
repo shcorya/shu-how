@@ -10,13 +10,13 @@ This program automatically funds new NKN nodes so that new nodes can join the ne
   - Pre-set transaction fee for the NKN funding transaction. `0.1` may be a good default.
 - `--from` *required*
   - Path to `wallet.json`-like file which holds and automatically distributes the initialization funds.
-- `--password-file`, `-p` *required*
-  - 
+- `--pswdfile`, `-p` *required*
+  - Path to `wallet.pswd`-like file corresponding to the `from` option.
 - `--interval`, `-i` *default:* `300`
-  -  
+  - Interval (in seconds) to re-check for transaction hash in `funding.txt`.
 - `--to` *default:* `/nkn/data/wallet.json`
   - Path to a JSON file representing an object with an `Address` property.
 - `--directory`, `-d` *default:* `/nkn/data`
-  -
+  - Directory to check for `funding.txt`
 
 ## Overview
