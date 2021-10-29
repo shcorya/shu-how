@@ -1,0 +1,23 @@
+{
+  "name": "shu-how",
+  "version": "0.1.0",
+  "description": "Automatically fund your new NKN nodes from a pre-configured wallet",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/stevecorya/shu-how.git"
+  },
+  "keywords": [
+    "nkn",
+    "blockchain"
+  ],
+  "author": "Steve Corya",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/stevecorya/shu-how/issues"
+  },
+  "homepage": "https://github.com/stevecorya/shu-how#readme"
+}
