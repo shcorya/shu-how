@@ -4,7 +4,7 @@ NKN has recently introduced a fee to register new nodes. The fee is nominal as i
 This program automatically funds new NKN nodes so that new nodes can join the network without any manual intervention.
 
 ## Options
-- `--requirement`, `-r` *required*
+- `--amount`, `-a` *required*
   - The required amount of NKN to create a new node. Initially set at `10`.
 - `--fee` *required*
   - Pre-set transaction fee for the NKN funding transaction. `0.1` may be a good default.
