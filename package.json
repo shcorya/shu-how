@@ -19,5 +19,8 @@
   "bugs": {
     "url": "https://github.com/stevecorya/shu-how/issues"
   },
-  "homepage": "https://github.com/stevecorya/shu-how#readme"
+  "homepage": "https://github.com/stevecorya/shu-how#readme",
+  "dependencies": {
+    "nkn-sdk": "^1.2.0"
+  }
 }
