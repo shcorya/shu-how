@@ -21,6 +21,7 @@
   },
   "homepage": "https://github.com/stevecorya/shu-how#readme",
   "dependencies": {
-    "nkn-sdk": "^1.2.0"
+    "nkn-sdk": "^1.2.0",
+    "yargs": "^17.2.1"
   }
 }
