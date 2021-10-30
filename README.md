@@ -1,7 +1,5 @@
 # shu-how
-NKN has recently introduced a fee to register new nodes. The fee is nominal as it will ultimately be repaid to miners.
-
-This program automatically funds new NKN nodes so that new nodes can join the network without any manual intervention.
+NKN has recently introduced a fee to register new nodes. The fee is nominal as it will ultimately be repaid to miners. This program automatically funds new NKN nodes so that new nodes can join the network without any manual intervention.
 
 ## Options
 - `--amount`, `-a` | *required*
