@@ -18,3 +18,55 @@ NKN has recently introduced a fee to register new nodes. The fee is nominal as i
   - Directory to check for `funding.txt`.
 
 ## Overview
+
+## Example
+```yaml
+version: '3.9'
+
+services:
+  node:
+    image: nknorg/nkn:latest
+    command: >
+      nknd
+      --no-nat
+      --password-file /run/secrets/nkn_init-pswd
+    configs:
+      - source: nkn_main-beneficiary
+        target: /nkn/data/config.json
+      - source: nkn_init-wallet
+        target: /nkn/data/wallet.json
+    secrets:
+      - nkn_init-pswd 
+    ports:
+      - "80:80"
+      - "30001-30005:30001-30005"
+    volumes:
+      - data:/nkn/data
+    deploy:
+      mode: global
+      restart_policy:
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+      update_config:
+        parallelism: 1
+        delay: 4h
+        failure_action: rollback
+      placement:
+        constraints:
+          - node.role == worker
+
+configs:
+  nkn_main-beneficiary:
+    external: true
+  nkn_init-wallet:
+    external: true
+
+secrets:
+  nkn_init-pswd:
+    external: true
+
+volumes:
+  data:
+    driver: local
+```
