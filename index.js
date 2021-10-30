@@ -5,7 +5,9 @@ const FILENAME = 'funding.txt';
 /*-----\
 | args |
 \-----*/
+const yargs = require ('yargs/yargs');
 const { hideBin } = require('yargs/helpers');
+const process = require ('process');
 const argv = yargs (hideBin (process.argv)).options ({
   dry: {
     requiresArg: false,
@@ -41,13 +43,6 @@ const argv = yargs (hideBin (process.argv)).options ({
     string: true,
     alias: 'p'
   },
-  interval: {
-    requiresArg: true,
-    description: 'Interval (in minutes) to re-check for transaction hash at \'' + FILENAME + '\'',
-    default: 300,
-    number: true,
-    alias: 'i'
-  },
   to: {
     requiresArg: true,
     description: 'Path to a JSON file representing an object with an \'Address\' property',
@@ -72,7 +67,6 @@ const argv = yargs (hideBin (process.argv)).options ({
 process.on ('SIGTERM', process.exit);
 
 const fs = require ('fs');
-const process = require ('process');
 const nkn = require ('nkn-sdk');
 
 // load funded wallet
@@ -119,16 +113,36 @@ try {
     // check whether or not balance amount is sufficient
     if (!amount.comparedTo (argv.amount + argv.fee) >= 0) {
       // insufficient balance to initialize a new wallet
+      console.error ('Insufficient NKN balance to initialize a new node');
+      process.exit (1);      
 
     } else {
+
       // balance is sufficient
-      fromWallet.transferTo (toAddress, argv.amount, {
-        fee: argv.fee
-      });
+      if (!argv.dry) {  
+        fromWallet.transferTo (toAddress, argv.amount, {
+          fee: argv.fee
+        }).then (txOrHash => {
+
+          // transaction successfully submitted
+          fs.writeFileSync (checkFile, JSON.stringify (txOrHash));
+          console.log ('Transaction successfully submitted and saved');
+
+        }, txFailure => {
+          // failed to submit transaction
+          console.error ('Could not submit transaction to NKN blockchain');
+          process.exit (1);
+        });
+      } else {
+
+        // dry run 
+        console.info ('Sufficient balance found, skipping tx in dry run');
+      }
     }
 
-  }, failure => {
+  }, balanceFailure => {
     // could not retrieve balance
-
+    console.error ('Could not retrieve balance for wallet ' + fromWallet.address);
+    process.exit (1);
   });
 }
