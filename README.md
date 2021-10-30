@@ -13,6 +13,6 @@ NKN has recently introduced a fee to register new nodes. The fee is nominal as i
 - `--to` | *default:* `/nkn/data/wallet.json`
   - Path to a JSON file representing an object with an `Address` property.
 - `--directory`, `-d` | *default:* `/nkn/data`
-  - Directory to check for `funding.txt`
+  - Directory to check for `funding.txt`.
 
 ## Overview
