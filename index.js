@@ -7,6 +7,13 @@ const FILENAME = 'funding.txt';
 \-----*/
 const { hideBin } = require('yargs/helpers');
 const argv = yargs (hideBin (process.argv)).options ({
+  dry: {
+    requiresArg: false,
+    description: 'Do not actually transfer any NKN',
+    demandOption: false,
+    boolean: true,
+    alias: 'd'
+  },
   amount: {
     requiresArg: true,
     description: 'The required amount of NKN to create a new node',
@@ -49,7 +56,7 @@ const argv = yargs (hideBin (process.argv)).options ({
     alias: 't'
   },
   directory: {
-    r equiresArg: true,
+    requiresArg: true,
     description: 'Directory to check for \'' + FILENAME + '\'',
     default: '/nkn/data',
     string: true,
@@ -61,7 +68,11 @@ const argv = yargs (hideBin (process.argv)).options ({
 /*-----\
 | Main |
 \-----*/
+// leave the program running for docker
+process.on ('SIGTERM', process.exit);
+
 const fs = require ('fs');
+const process = require ('process');
 const nkn = require ('nkn-sdk');
 
 // load funded wallet
@@ -77,13 +88,47 @@ if (!nkn.Wallet.verifyAddress (toAddress)) {
   process.exit (1);
 }
 
-// check 
+// check for the existence of the receipt file (which should contain the tx or hash)
 const checkFile = argv.directory.endsWith ('/') ?
-    argv.directory  + FILENAME :
-    argv.directory + '/' + FILENAME;
+  argv.directory  + FILENAME :
+  argv.directory + '/' + FILENAME;
+console.info ('Checking for file at', checkFile);
 try {
   fs.statSync (checkFile);
-} catch (error) {
+
+  // file found
+  console.log (FILENAME, 'successfully found');
+
+} catch (noFileError) {
+
+  // file not found 
   console.log ('Could not find file at', checkFile);
-  process.exit (1);
+
+  // verify password
+  console.info ('Checking provided wallet password');
+  if (!fromWallet.verifyPassword ()) {
+    console.error ('The provided password for the from wallet is not valid');
+    process.exit (1);
+  }
+
+  // ensure sufficient balance
+  console.info ('Checking wallet balance');
+  nkn.Wallet.getBalance (fromWallet.address).then (amount => {
+    console.log ('Found ' + amount.toString () + ' NKN at init address ' + fromWallet.address);
+
+    // check whether or not balance amount is sufficient
+    if (!amount.comparedTo (argv.amount + argv.fee) >= 0) {
+      // insufficient balance to initialize a new wallet
+
+    } else {
+      // balance is sufficient
+      fromWallet.transferTo (toAddress, argv.amount, {
+        fee: argv.fee
+      });
+    }
+
+  }, failure => {
+    // could not retrieve balance
+
+  });
 }
