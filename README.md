@@ -12,8 +12,6 @@ This program automatically funds new NKN nodes so that new nodes can join the ne
   - Path to `wallet.json`-like file which holds and automatically distributes the initialization funds.
 - `--pswdfile`, `-p` | *required*
   - Path to `wallet.pswd`-like file corresponding to the `from` option.
-- `--interval`, `-i` | *default:* `300`
-  - Interval (in minutes) to re-check for transaction hash in `funding.txt`.
 - `--to` | *default:* `/nkn/data/wallet.json`
   - Path to a JSON file representing an object with an `Address` property.
 - `--directory`, `-d` | *default:* `/nkn/data`
