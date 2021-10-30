@@ -1,6 +1,10 @@
 "use strict";
 
-// cmd
+const FILENAME = 'funding.txt';
+
+/*-----\
+| args |
+\-----*/
 const { hideBin } = require('yargs/helpers');
 const argv = yargs (hideBin (process.argv)).options ({
   amount: {
@@ -32,7 +36,7 @@ const argv = yargs (hideBin (process.argv)).options ({
   },
   interval: {
     requiresArg: true,
-    description: 'Interval (in seconds) to re-check for transaction hash in \'funding.txt\'',
+    description: 'Interval (in minutes) to re-check for transaction hash at \'' + FILENAME + '\'',
     default: 300,
     number: true,
     alias: 'i'
@@ -45,8 +49,8 @@ const argv = yargs (hideBin (process.argv)).options ({
     alias: 't'
   },
   directory: {
-    requiresArg: true,
-    description: 'Directory to check for \'funding.txt\'',
+    r equiresArg: true,
+    description: 'Directory to check for \'' + FILENAME + '\'',
     default: '/nkn/data',
     string: true,
     alias: 'd'
@@ -54,6 +58,32 @@ const argv = yargs (hideBin (process.argv)).options ({
 }).argv;
 
 
-// main
+/*-----\
+| Main |
+\-----*/
+const fs = require ('fs');
 const nkn = require ('nkn-sdk');
 
+// load funded wallet
+const fromWallet = new nkn.Wallet.fromJSON (
+  fs.readFileSync (argv.from), {
+    password: fs.readFileSync (argv.pswdfile).toString ().trim ()
+});
+
+// load address to fund
+const toAddress = JSON.parse (fs.readFileSync (argv.to)).Address;
+if (!nkn.Wallet.verifyAddress (toAddress)) {
+  console.error ('Could not find a valid \'Address\' property at', argv.to);
+  process.exit (1);
+}
+
+// check 
+const checkFile = argv.directory.endsWith ('/') ?
+    argv.directory  + FILENAME :
+    argv.directory + '/' + FILENAME;
+try {
+  fs.statSync (checkFile);
+} catch (error) {
+  console.log ('Could not find file at', checkFile);
+  process.exit (1);
+}
