@@ -4,19 +4,19 @@ NKN has recently introduced a fee to register new nodes. The fee is nominal as i
 This program automatically funds new NKN nodes so that new nodes can join the network without any manual intervention.
 
 ## Options
-- `--amount`, `-a` *required*
+- `--amount`, `-a` | *required*
   - The required amount of NKN to create a new node. Initially set at `10`.
-- `--fee` *required*
+- `--fee` | *required*
   - Pre-set transaction fee for the NKN funding transaction. `0.1` may be a good default.
-- `--from` *required*
+- `--from` | *required*
   - Path to `wallet.json`-like file which holds and automatically distributes the initialization funds.
-- `--pswdfile`, `-p` *required*
+- `--pswdfile`, `-p` | *required*
   - Path to `wallet.pswd`-like file corresponding to the `from` option.
-- `--interval`, `-i` *default:* `300`
-  - Interval (in seconds) to re-check for transaction hash in `funding.txt`.
-- `--to` *default:* `/nkn/data/wallet.json`
+- `--interval`, `-i` | *default:* `300`
+  - Interval (in minutes) to re-check for transaction hash in `funding.txt`.
+- `--to` | *default:* `/nkn/data/wallet.json`
   - Path to a JSON file representing an object with an `Address` property.
-- `--directory`, `-d` *default:* `/nkn/data`
+- `--directory`, `-d` | *default:* `/nkn/data`
   - Directory to check for `funding.txt`
 
 ## Overview
