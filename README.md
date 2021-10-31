@@ -23,27 +23,30 @@ NKN has recently introduced a fee to register new nodes. The fee is nominal as i
 ```yaml
 version: '3.9'
 
+x-placement-constraint: &all-workers
+  mode: global
+  placement:
+    constraints:   
+      - node.role == worker
+
 services:
   node:
     image: nknorg/nkn:latest
     command: >
       nknd
       --no-nat
-      --password-file /run/secrets/nkn_init-pswd
+      --password-file /run/secrets/nkn_master-pswd
     configs:
       - source: nkn_main-beneficiary
         target: /nkn/data/config.json
-      - source: nkn_init-wallet
-        target: /nkn/data/wallet.json
     secrets:
-      - nkn_init-pswd 
+      - nkn_master-pswd 
     ports:
       - "80:80"
       - "30001-30005:30001-30005"
     volumes:
       - data:/nkn/data
     deploy:
-      mode: global
       restart_policy:
         delay: 5s
         max_attempts: 3
@@ -52,9 +55,24 @@ services:
         parallelism: 1
         delay: 4h
         failure_action: rollback
-      placement:
-        constraints:
-          - node.role == worker
+      <<: *all-workers
+
+  init:
+    image: stevecorya/shu-how:latest
+    command: >
+      --dry
+      --amount 10
+      --fee 0.1
+      --from /nkn_init-wallet
+      --pswdfile /run/secrets/nkn_init-pswd
+    configs:
+      - nkn_init-wallet
+    secrets:
+      - nkn_init-pswd
+    volumes:
+      - data:/nkn/data
+    deploy:
+      <<: *all-workers
 
 configs:
   nkn_main-beneficiary:
