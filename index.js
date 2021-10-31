@@ -8,7 +8,7 @@ const FILENAME = 'funding.txt';
 const DateFormat = require ('fast-date-format');
 const dateFormat = new DateFormat ('YYYY[-]MM[-]DD HH[:]mm[:]ss');
 
-const log = require('console-log-level') (
+const log = require ('console-log-level') ({
   prefix: function (level) {
     return `[sho-how] ${dateFormat.format (new Date ())} [${level.toLowerCase ()}]`
   }
