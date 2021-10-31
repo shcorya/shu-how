@@ -3,6 +3,18 @@
 const FILENAME = 'funding.txt';
 
 /*-----\
+| logs |
+\-----*/
+const DateFormat = require ('fast-date-format');
+const dateFormat = new DateFormat ('YYYY[-]MM[-]DD HH[:]mm[:]ss');
+
+const log = require('console-log-level') (
+  prefix: function (level) {
+    return `[sho-how] ${dateFormat.format (new Date ())} [${level.toLowerCase ()}]`
+  }
+})
+
+/*-----\
 | args |
 \-----*/
 const yargs = require ('yargs/yargs');
@@ -13,7 +25,6 @@ const argv = yargs (hideBin (process.argv)).options ({
     requiresArg: false,
     description: 'Do not actually transfer any NKN',
     demandOption: false,
-    boolean: true,
     alias: 'd'
   },
   amount: {
@@ -78,7 +89,7 @@ const fromWallet = new nkn.Wallet.fromJSON (
 // load address to fund
 const toAddress = JSON.parse (fs.readFileSync (argv.to)).Address;
 if (!nkn.Wallet.verifyAddress (toAddress)) {
-  console.error ('Could not find a valid \'Address\' property at', argv.to);
+  log.error ('Could not find a valid \'Address\' property at', argv.to);
   process.exit (1);
 }
 
@@ -86,34 +97,34 @@ if (!nkn.Wallet.verifyAddress (toAddress)) {
 const checkFile = argv.directory.endsWith ('/') ?
   argv.directory  + FILENAME :
   argv.directory + '/' + FILENAME;
-console.info ('Checking for file at', checkFile);
+log.info ('Checking for file at', checkFile);
 try {
   fs.statSync (checkFile);
 
   // file found
-  console.log (FILENAME, 'successfully found');
+  log.info (FILENAME, 'successfully found');
 
 } catch (noFileError) {
 
   // file not found 
-  console.log ('Could not find file at', checkFile);
+  log.warn ('Could not find file at', checkFile);
 
   // verify password
-  console.info ('Checking provided wallet password');
+  log.info ('Checking provided wallet password');
   if (!fromWallet.verifyPassword ()) {
-    console.error ('The provided password for the from wallet is not valid');
+    log.error ('The provided password for the from wallet is not valid');
     process.exit (1);
   }
 
   // ensure sufficient balance
-  console.info ('Checking wallet balance');
+  log.info ('Checking wallet balance');
   nkn.Wallet.getBalance (fromWallet.address).then (amount => {
-    console.log ('Found ' + amount.toString () + ' NKN at init address ' + fromWallet.address);
+    log.info ('Found ' + amount.toString () + ' NKN at init address ' + fromWallet.address);
 
     // check whether or not balance amount is sufficient
     if (!amount.comparedTo (argv.amount + argv.fee) >= 0) {
       // insufficient balance to initialize a new wallet
-      console.error ('Insufficient NKN balance to initialize a new node');
+      log.error ('Insufficient NKN balance to initialize a new node');
       process.exit (1);      
 
     } else {
@@ -126,23 +137,23 @@ try {
 
           // transaction successfully submitted
           fs.writeFileSync (checkFile, JSON.stringify (txOrHash));
-          console.log ('Transaction successfully submitted and saved');
+          log.info ('Transaction successfully submitted and saved');
 
         }, txFailure => {
           // failed to submit transaction
-          console.error ('Could not submit transaction to NKN blockchain');
+          log.error ('Could not submit transaction to NKN blockchain');
           process.exit (1);
         });
       } else {
 
         // dry run 
-        console.info ('Sufficient balance found, skipping tx in dry run');
+        log.info ('Sufficient balance found, skipping tx in dry run');
       }
     }
 
   }, balanceFailure => {
     // could not retrieve balance
-    console.error ('Could not retrieve balance for wallet ' + fromWallet.address);
+    log.error ('Could not retrieve balance for wallet ' + fromWallet.address);
     process.exit (1);
   });
 }
