@@ -84,6 +84,8 @@ configs:
 secrets:
   nkn_init-pswd:
     external: true
+  nkn_master-pswd:
+    external: true
 
 volumes:
   data:
