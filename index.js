@@ -81,7 +81,7 @@ const fs = require ('fs');
 const nkn = require ('nkn-sdk');
 
 // load funded wallet
-const fromWallet = new nkn.Wallet.fromJSON (
+const fromWallet = nkn.Wallet.fromJSON (
   fs.readFileSync (argv.from), {
     password: fs.readFileSync (argv.pswdfile).toString ().trim ()
 });
