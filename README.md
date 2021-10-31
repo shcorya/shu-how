@@ -1,5 +1,5 @@
 # shu-how
-NKN has recently introduced a fee to register new nodes. The fee is nominal as it will ultimately be repaid to miners. This program automatically funds new NKN nodes so that new nodes can join the network without any manual intervention.
+NKN has recently introduced a fee to register new nodes. The fee is nominal as it will ultimately be repaid to miners. This program automatically funds new NKN nodes so that new nodes can join the network without any manual intervention. This program is intended to be run alongside an NKN node in a Docker Swarm environment.
 
 ## Options
 - `--dry`, `-d` | *default:* `false`
@@ -18,6 +18,7 @@ NKN has recently introduced a fee to register new nodes. The fee is nominal as i
   - Directory to check for `funding.txt`.
 
 ## Overview
+The program accepts options which may change in accordance with potential and forseeable changes to the NKN blockchain. The simple, binary existance of a file is currently used to determine wether each local node has been funded already. Presently this filename is hardcoded as `funding.txt`. The removal or moving of this file may result in funds being illogically distributed.
 
 ## Example
 ```yaml
