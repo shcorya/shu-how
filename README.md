@@ -61,7 +61,7 @@ services:
   init:
     image: stevecorya/shu-how:latest
     command: >
-      --dry
+      --dry true
       --amount 10
       --fee 0.1
       --from /nkn_init-wallet
