@@ -1,6 +1,7 @@
 "use strict";
 
 const FILENAME = 'funding.txt';
+const process = require ('process');
 
 /*-----\
 | logs |
@@ -11,65 +12,30 @@ const dateFormat = new DateFormat ('YYYY[-]MM[-]DD HH[:]mm[:]ss');
 const log = require ('console-log-level') ({
   prefix: function (level) {
     return `[shu-how] ${dateFormat.format (new Date ())} [${level.toLowerCase ()}]`
-  }
+  },
+  level: process.argv.includes ('--debug') ? 'debug' : 'info'
 })
 
 /*-----\
 | args |
 \-----*/
-const yargs = require ('yargs/yargs');
-const { hideBin } = require('yargs/helpers');
-const process = require ('process');
-const argv = yargs (hideBin (process.argv)).options ({
-  dry: {
-    requiresArg: false,
-    description: 'Do not actually transfer any NKN',
-    demandOption: false,
-    alias: 'd'
-  },
-  amount: {
-    requiresArg: true,
-    description: 'The required amount of NKN to create a new node',
-    demandOption: true,
-    number: true,
-    alias: 'a'
-  },
-  fee: {
-    requiresArg: true,
-    description: 'Pre-set transaction fee for the NKN funding transaction',
-    demandOption: true,
-    number: true,
-    alias: 'f'
-  },
-  from: {
-    requiresArg: true,
-    description: 'Path to \'wallet.json\'-like file which holds and automatically distributes the initialization funds',
-    demandOption: true,
-    string: true
-  },
-  pswdfile: {
-    requiresArg: true,
-    description: 'Path to \'wallet.pswd\'-like file corresponding to the from option',
-    demandOption: true,
-    string: true,
-    alias: 'p'
-  },
-  to: {
-    requiresArg: true,
-    description: 'Path to a JSON file representing an object with an \'Address\' property',
-    default: '/nkn/data/wallet.json',
-    string: true,
-    alias: 't'
-  },
-  directory: {
-    requiresArg: true,
-    description: 'Directory to check for \'' + FILENAME + '\'',
-    default: '/nkn/data',
-    string: true,
-    alias: 'd'
+log.debug ('process.argv:', process.argv);
+log.debug ('Parsing arguments');
+const argv = require ('minimist') (process.argv.slice (2), {
+  default: {
+    to: '/nkn/data/wallet.json',
+    directory: '/nkn/data'
   }
-}).argv;
+});
+log.debug ('argv:', argv);
 
+const reqArgs = ['amount', 'fee', 'from', 'pswdfile'];
+reqArgs.forEach (arg => {
+  if (!Object.keys (argv).includes (arg)) {
+    log.error ('Missing required argument:', arg);
+    process.exit (1);
+  }
+});
 
 /*-----\
 | Main |
