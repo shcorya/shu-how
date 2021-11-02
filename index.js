@@ -94,9 +94,10 @@ if (!nkn.Wallet.verifyAddress (toAddress)) {
 }
 
 // check for the existence of the receipt file (which should contain the tx or hash)
-const checkFile = '' + argv.directory.endsWith ('/') ?
+var checkFile = '';
+checkFile = checkFile + (argv.directory.endsWith ('/') ?
   argv.directory + FILENAME :
-  argv.directory + '/' + FILENAME;
+  argv.directory + '/' + FILENAME);
 log.info ('Checking for file at', checkFile);
 try {
   fs.statSync (checkFile);
