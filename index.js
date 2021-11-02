@@ -47,9 +47,12 @@ const fs = require ('fs');
 const nkn = require ('nkn-sdk');
 
 // load funded wallet
+log.debug ('Loading wallet at', argv.from);
+const walletJSON = fs.readFileSync (argv.from).toString ();
+log.debug ('wallet.json:', JSON.parse (walletJSON));
 const fromWallet = nkn.Wallet.fromJSON (
-  JSON.parse (fs.readFileSync (argv.from)), {
-    password: fs.readFileSync (argv.pswdfile).toString ().trim ()
+  walletJSON, {
+    password: fs.readFileSync (argv.pswdfile).toString ()
 });
 
 // load address to fund
@@ -58,6 +61,7 @@ if (!nkn.Wallet.verifyAddress (toAddress)) {
   log.error ('Could not find a valid \'Address\' property at', argv.to);
   process.exit (1);
 }
+log.debug ('Found to address', toAddress);
 
 // check for the existence of the receipt file (which should contain the tx or hash)
 var checkFile = '';
