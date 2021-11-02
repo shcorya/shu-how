@@ -51,7 +51,7 @@ log.debug ('Loading wallet at', argv.from);
 const walletJSON = fs.readFileSync (argv.from).toString ();
 log.debug ('wallet.json:', JSON.parse (walletJSON));
 log.debug ('Loading wallet password at', argv.pswdfile);
-const walletPswd = fs.readFileSync (argv.pswdfile).toString ();
+const walletPswd = fs.readFileSync (argv.pswdfile).toString ().trim ();
 log.debug ('pswd:', walletPswd);
 const fromWallet = nkn.Wallet.fromJSON (
   walletJSON, {
