@@ -85,11 +85,14 @@ try {
 
   // ensure sufficient balance
   log.info ('Checking wallet balance');
-  nkn.Wallet.getBalance (fromWallet.address).then (amount => {
-    log.info ('Found ' + amount.toString () + ' NKN at init address ' + fromWallet.address);
-
+  nkn.Wallet.getBalance (fromWallet.address).then (balance => {
+    log.info ('Found ' + balance.toString () + ' NKN at init address ' + fromWallet.address);
+    
+    const fee = new nkn.Amount (argv.fee);
+    const amount = new nkn.Amount (argv.amount);
+    
     // check whether or not balance amount is sufficient
-    if (!amount.comparedTo (argv.amount + argv.fee) >= 0) {
+    if (!balance.comparedTo (amount.plus (fee)) >= 0) {
       // insufficient balance to initialize a new wallet
       log.error ('Insufficient NKN balance to initialize a new node');
       process.exit (1);      
@@ -98,8 +101,8 @@ try {
 
       // balance is sufficient
       if (!argv.dry) {  
-        fromWallet.transferTo (toAddress, argv.amount, {
-          fee: argv.fee
+        fromWallet.transferTo (toAddress, amount.toString (), {
+          fee: fee.toString ()
         }).then (txOrHash => {
 
           // transaction successfully submitted
