@@ -10,7 +10,7 @@ const dateFormat = new DateFormat ('YYYY[-]MM[-]DD HH[:]mm[:]ss');
 
 const log = require ('console-log-level') ({
   prefix: function (level) {
-    return `[sho-how] ${dateFormat.format (new Date ())} [${level.toLowerCase ()}]`
+    return `[shu-how] ${dateFormat.format (new Date ())} [${level.toLowerCase ()}]`
   }
 })
 
