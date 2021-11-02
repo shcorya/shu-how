@@ -83,13 +83,6 @@ try {
   // file not found 
   log.warn ('Could not find file at', checkFile);
 
-  // verify password
-  log.info ('Checking provided wallet password');
-  if (!fromWallet.verifyPassword ()) {
-    log.error ('The provided password for the from wallet is not valid');
-    process.exit (1);
-  }
-
   // ensure sufficient balance
   log.info ('Checking wallet balance');
   nkn.Wallet.getBalance (fromWallet.address).then (amount => {
