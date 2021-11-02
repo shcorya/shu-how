@@ -90,9 +90,15 @@ try {
     
     const fee = new nkn.Amount (argv.fee);
     const amount = new nkn.Amount (argv.amount);
+
+    log.debug ('fee:', fee.toString ());
+    log.debug ('amount:', amount.toString ());
+    log.debug ('fee + amount:', fee.plus (amount).toString ());
+    log.debug ('balance - (fee + amount):', balance.minus (fee.plus (amount)));
+    log.debug ('!(balance.comparedTo (amount.plus (fee)) >= 0):', !(balance.comparedTo (amount.plus (fee)) >= 0));
     
     // check whether or not balance amount is sufficient
-    if (!balance.comparedTo (amount.plus (fee)) >= 0) {
+    if (!(balance.comparedTo (amount.plus (fee)) >= 0)) {
       // insufficient balance to initialize a new wallet
       log.error ('Insufficient NKN balance to initialize a new node');
       process.exit (1);      
