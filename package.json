@@ -24,6 +24,7 @@
     "console-log-level": "^1.4.1",
     "fast-date-format": "^2.2.4",
     "minimist": "^1.2.5",
-    "nkn-sdk": "^1.2.0"
+    "nkn-sdk": "^1.2.0",
+    "queue": "^6.0.2"
   }
 }
