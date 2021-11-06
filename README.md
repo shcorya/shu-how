@@ -2,20 +2,18 @@
 NKN has recently introduced a fee to register new nodes. The fee is nominal as it will ultimately be repaid to miners. This program automatically funds new NKN nodes so that new nodes can join the network without any manual intervention. This program is intended to be run alongside an NKN node in a Docker Swarm environment.
 
 ## Options
-- `--dry`, `-d` | *default:* `false`
-  - Do not actually transfer any NKN. Leaves no transaction record either.
-- `--amount`, `-a` | ***required***
+- `--amount` | ***required***
   - The required amount of NKN to create a new node. Initially set at `10`.
 - `--fee` | ***required***
   - Pre-set transaction fee for the NKN funding transaction. `0.1` may be a good default.
-- `--from` | ***required***
+- `--wallet` | ***required***
   - Path to `wallet.json`-like file which holds and automatically distributes the initialization funds.
-- `--pswdfile`, `-p` | ***required***
+- `--pswdfile` | ***required***
   - Path to `wallet.pswd`-like file corresponding to the `from` option.
-- `--to` | *default:* `/nkn/data/wallet.json`
-  - Path to a JSON file representing an object with an `Address` property.
-- `--directory`, `-d` | *default:* `/nkn/data`
-  - Directory to check for `funding.txt`.
+- `--service` | ***required***
+  - Name of the NKN node service to append to `tasks.` for DNS queries.
+- `--interval` | **default:** `2000`
+  - Interval (milliseconds) to check the `tasks.` DNS endpoint.
 
 ## Overview
 The program accepts options which may change in accordance with potential and forseeable changes to the NKN blockchain. The simple, binary existance of a file is currently used to determine wether each local node has been funded already. Presently this filename is hardcoded as `funding.txt`. The removal or moving of this file may result in funds being illogically distributed.
