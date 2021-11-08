@@ -24,7 +24,9 @@ log.debug ('Parsing arguments');
 const argv = require ('minimist') (process.argv.slice (2), {
   default: {
     interval: 15,
-    minimum: 0
+    minimum: 0,
+    seed: 'mainnet-seed-0001.nkn.org',
+    txfee: 0
   }
 });
 log.debug ('argv:', argv);
@@ -41,6 +43,7 @@ reqArgs.forEach (arg => {
 | Main |
 \-----*/
 const { exec, execSync } = require ('child_process');
+const { setIntervalAsync, clearIntervalAsync } = require ('set-interval-async/dynamic');
 const fs = require ('fs');
 
 // read password
@@ -61,17 +64,47 @@ var nonce = JSON.parse (
 ).results.nonce;
 log.info ('Found nonce', nonce);
 
+// create a queue for sequential execution
+const queue = require ('queue') ({
+  concurrency: 1,
+  autostart: true
+});
+queue.on ('error', error => log.warn (error.message));
 
-const discovery = setInterval (async function discover () {
-  const dnsEndpoint = `tasks.${argv.service}.`;
-  const addresses = (await dig ([dnsEndpoint]))['answer'].map (a => a['value']);
-  // each address will correspond to a public key and each address may correspond to an id
-  // for each address with a public key but no id an id needs to be generated
-  // id's must be generated one-at-a-time in order to properly track pending NKN balance
+// run repeatedly
+const mainClock = setIntervalAsync (async function main () {
+
+  // find every virtual IP/task at the specified service name
+  const addresses = (await dig ([`tasks.${argv.service}.`]))['answer'].map (a => a['value']);
+
+  // check the status of every task
   const statuses = await Promise.all (addresses.map (address => {
-    exec (`nknc --ip ${address} info --state`); 
+    exec (`nknc --ip ${address} info --state`);
   }));
 
-  const keysToFund = statuses.filter (status => {
+  // public keys from only tasks that are awaiting ID
+  const keysReady = statuses.filter (status => {
     return status.error.code == -45022 }).map (status => status.error.publicKey);
-}, argv.interval * 1000);
+
+  // send funding functions to the queue
+  queue.push (async function (callback) {
+    let cost = argv.fee + argv.txfee;
+
+    // make sure balance stays above minimum
+    if (minimum < (balance - cost)) {
+      callback (new Error ("Insufficient balance for ID generation."), null);
+    }
+
+    // try to generate id
+    try {
+      const result = await exec (`nknc id --help`);
+      balance = balance - cost;
+      nonce = nonce + 1;
+      callback (null, result);
+    } catch (error) { 
+      callback (error, null); 
+    }
+  });
+
+}, argv.interval);
+
